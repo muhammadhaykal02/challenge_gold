@@ -27,8 +27,8 @@ def file_cleansing():
     df.to_sql('input_file_dirty', con=conn, if_exists='append')
     conn.close()    
 
-    df['clean_tweet'] = df['Tweet'].apply(_remove_enter)
-    df['clean_tweet'] = df['clean_tweet'].apply(_remove_punct_emoji)
+    df['clean_tweet'] = df['Tweet'].apply(_remove_punct_emoji)
+    df['clean_tweet'] = df['clean_tweet'].apply(_remove_enter)
     df['clean_tweet'] = df['clean_tweet'].apply(_remove_spaces)
     df_clean = df[["Tweet", "clean_tweet"]]
 
