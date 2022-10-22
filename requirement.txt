@@ -1,0 +1,6 @@
+pandas
+unidecode
+re
+Flask
+flasgger
+sqlite3
