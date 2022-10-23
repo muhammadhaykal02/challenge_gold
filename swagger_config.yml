@@ -21,8 +21,3 @@ parameters:
         text:
           type: string
           description: input your text
-parameters:
-  - name: file
-    in: formData
-    type: file
-    required: false
