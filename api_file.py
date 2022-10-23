@@ -12,8 +12,11 @@ def decode(text):
 def _remove_enter(text):
     return re.sub(r"(?<!\\)(\\\\)*\\n|\n", ' ',unidecode(text))
 
-def _remove_punct_emoji(text):
+def _remove_emoji(text):
     return re.sub(r"\\x[A-Za-z0-9./]+", "",unidecode(text))
+
+def _remove_punct(text):
+    return re.sub(r"[^\w\d\s]+", "",text)
 
 def _remove_spaces(text):
     return re.sub(' +', ' ',text)
@@ -24,16 +27,17 @@ def file_cleansing():
     df = pd.read_csv(file, encoding="latin-1")
     
     conn = sqlite3.connect('challenge_gold.db') 
-    df.to_sql('input_file_dirty', con=conn, if_exists='append')
+    df.to_sql('input_file_dirty', index=False, con=conn, if_exists='append')
     conn.close()    
 
-    df['clean_tweet'] = df['Tweet'].apply(_remove_punct_emoji)
+    df['clean_tweet'] = df['Tweet'].apply(_remove_emoji)
     df['clean_tweet'] = df['clean_tweet'].apply(_remove_enter)
     df['clean_tweet'] = df['clean_tweet'].apply(_remove_spaces)
+    df['clean_tweet'] = df['clean_tweet'].apply(_remove_punct)  
     df_clean = df[["Tweet", "clean_tweet"]]
 
     conn = sqlite3.connect('challenge_gold.db') 
-    df_clean.to_sql('file_clean', con=conn, if_exists='append')
+    df_clean.to_sql('file_clean', index=False, con=conn, if_exists='append')
     conn.close()    
 
     return jsonify("Successfully saved data to DB")
