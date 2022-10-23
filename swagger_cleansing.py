@@ -77,14 +77,14 @@ def _remove_spaces_file(text):
 def _remove_punct_file(text):
     return re.sub(r"[^\w\d\s]+", "",text)
 
-@swag_from("swagger_config.yml", methods=['POST'])
+@swag_from("swagger_config_file.yml", methods=['POST'])
 @app.route("/clean_file/v1", methods=['POST'])
 def file_cleansing():
     file = request.files['file']
     df = pd.read_csv(file, encoding="latin-1")
     
     conn = sqlite3.connect('challenge_gold.db') 
-    df.to_sql('input_file_dirty', con=conn, if_exists='append')
+    df.to_sql('input_file_dirty', index=False, con=conn, if_exists='append')
     conn.close()    
 
     df['clean_tweet'] = df['Tweet'].apply(_remove_emoji_file)
@@ -94,7 +94,7 @@ def file_cleansing():
     df_clean = df[["Tweet", "clean_tweet"]]
 
     conn = sqlite3.connect('challenge_gold.db') 
-    df_clean.to_sql('file_clean', con=conn, if_exists='append')
+    df_clean.to_sql('file_clean', index=False, con=conn, if_exists='append')
     conn.close()    
 
     return jsonify("Successfully saved data to DB")
